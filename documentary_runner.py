@@ -8,7 +8,7 @@ The Past Alive History - Automated Full Documentary Video Engine
     2. Resumable Multipart Chunked Upload (for files > 100 MB)
 - Verified Facebook Video Graph API Publishing with Direct Feed Distribution
 - Multi-Layer Zero-Duplicate Protection (Live Facebook Page Graph Feed + Local History Tracking)
-- Resilient Guaranteed Archive.org Documentary Pool
+- Resilient Guaranteed Archive.org Documentary Pool with Multi-Candidate Failover
 """
 
 import os
@@ -31,21 +31,13 @@ from config import (
     FB_VIDEO_UPLOAD_URL
 )
 
-# Curated High-Definition Public Domain Historical Documentaries from Archive.org
 ARCHIVE_DOCUMENTARY_POOL = [
     {
         "src_id": "arch_battle_of_midway",
-        "title": "The Battle of Midway (1942) - Original Color WWII Naval Battle Documentary 🇺🇸⚓",
+        "title": "The Battle of Midway (1942) - Historic Original Restored Color Footage 🎖️",
         "url": "https://archive.org/download/BattleOfMidway/BattleOfMidway_512kb.mp4",
         "description": "The Battle of Midway (1942) • Historic Original Color Footage.\n\nExperience John Ford's Academy Award-winning documentary covering the pivotal turning point of the Pacific War in June 1942. Featuring authentic 16mm Kodachrome combat footage captured during the Japanese air raid on Midway Atoll and the counterstrikes by US carrier squadrons.\n\nFull Restored Documentary. [src:arch_battle_of_midway]\n\nFollow @ThePastAliveHistory for daily deep historical restorations, wartime chronicles, and forgotten moments of world civilization brought back to life! ⏳📜\n\n#ThePastAliveHistory #HistoryAlive #BattleOfMidway #WWII #ColorHistory #HistoricalRestoration #NavalHistory #MilitaryHistory #Documentary",
         "category": "WWII History"
-    },
-    {
-        "src_id": "arch_memphis_belle",
-        "title": "The Memphis Belle: A Story of a Flying Fortress (1944) - 25 Combat Missions Over Europe 🛩️",
-        "url": "https://archive.org/download/TheMemphisBelleAStoryOfAFlyingFortress/TheMemphisBelle_512kb.mp4",
-        "description": "The Memphis Belle: A Story of a Flying Fortress (1944) • Directed by William Wyler.\n\nThe real combat crew of the B-17 Flying Fortress 'Memphis Belle' on their 25th and final perilous daylight bombing mission over Nazi-occupied Europe before heading home.\n\nFull Restored Color Documentary. [src:arch_memphis_belle]\n\nFollow @ThePastAliveHistory for daily military aviation history and deep historical restorations! ⏳📜\n\n#ThePastAliveHistory #MemphisBelle #B17 #AviationHistory #WWII #FlyingFortress #AirCombat #HistoricalRestoration #Documentary",
-        "category": "WWII Aviation"
     },
     {
         "src_id": "arch_fighting_lady",
@@ -55,17 +47,24 @@ ARCHIVE_DOCUMENTARY_POOL = [
         "category": "Aviation & Naval History"
     },
     {
+        "src_id": "arch_aleutians",
+        "title": "Report from the Aleutians (1943) - John Huston's Academy Award-Nominated Color Film ❄️🎖️",
+        "url": "https://archive.org/download/ReportFromTheAleutians/ReportFromTheAleutians_512kb.mp4",
+        "description": "Report from the Aleutians (1943) • Directed by John Huston.\n\nCapturing the harsh conditions and operations of US Armed Forces stationed on the remote Aleutian Islands during the campaign against imperial Japanese positions in Alaska.\n\nFull Restored Color Documentary. [src:arch_aleutians]\n\nFollow @ThePastAliveHistory for daily deep historical chronicles! ⏳📜\n\n#ThePastAliveHistory #JohnHuston #Aleutians #WWII #MilitaryHistory #ColorDocumentary",
+        "category": "WWII History"
+    },
+    {
         "src_id": "arch_prelude_to_war",
         "title": "Prelude to War (1942) - Frank Capra's Why We Fight Series 🌍🛡️",
-        "url": "https://archive.org/download/prelude_to_war_ipod/prelude_to_war_512kb.mp4",
+        "url": "https://archive.org/download/PreludeToWar/PreludeToWar_512kb.mp4",
         "description": "Prelude to War (1942) • Academy Award Winner for Best Documentary Feature.\n\nFrank Capra examines the rise of fascism in Italy, Nazism in Germany, and militarism in Japan, contrasting totalitarianism with free democracies leading to World War II.\n\nFull Episode Restoration. [src:arch_prelude_to_war]\n\nFollow @ThePastAliveHistory for daily deep historical archives and documentaries! ⏳📜\n\n#ThePastAliveHistory #PreludeToWar #FrankCapra #WhyWeFight #WorldHistory #WWIIHistory #DocumentaryArchive",
         "category": "Geopolitical History"
     },
     {
-        "src_id": "arch_nazis_strike",
-        "title": "The Nazis Strike (1943) - The Geopolitical Conquest of Central Europe ⚔️",
-        "url": "https://archive.org/download/the_nazis_strike/the_nazis_strike_512kb.mp4",
-        "description": "The Nazis Strike (1943) • Directed by Frank Capra & Anatole Litvak.\n\nA meticulous strategic breakdown of Germany's annexation of Austria, the Sudetenland crisis, the occupation of Czechoslovakia, and the 1939 blitzkrieg invasion of Poland.\n\nFull Historical Episode. [src:arch_nazis_strike]\n\nFollow @ThePastAliveHistory for daily deep historical chronicles! ⏳📜\n\n#ThePastAliveHistory #TheNazisStrike #WWIIHistory #EuropeanHistory #Blitzkrieg #MilitaryHistory #DocumentaryArchive",
+        "src_id": "arch_true_glory",
+        "title": "The True Glory (1945) - The Allied Victory in Europe (Academy Award Winner) 🎖️🌍",
+        "url": "https://archive.org/download/TheTrueGlory/TheTrueGlory_512kb.mp4",
+        "description": "The True Glory (1945) • Directed by Carol Reed & Garson Kanin.\n\nA definitive joint Anglo-American wartime documentary chronicling the final European campaign from the D-Day Normandy landings to the fall of Berlin.\n\nFull Restored Feature. [src:arch_true_glory]\n\nFollow @ThePastAliveHistory for daily historical documentaries and restoration archives! ⏳📜\n\n#ThePastAliveHistory #TheTrueGlory #DDay #WWIIHistory #AlliedForces #Documentary",
         "category": "WWII History"
     }
 ]
@@ -98,12 +97,12 @@ def get_posted_signatures_from_facebook(page_id: str, access_token: str, limit: 
             data = res.json().get("data", [])
             for item in data:
                 text = (item.get("description") or "") + " " + (item.get("title") or "")
-                src_matches = re.findall(r"\[src:([a-zA-Z0-9_\-]+)\]", text)
-                for sm in src_matches:
-                    signatures.add(sm)
+                found = re.findall(r"\[src:([a-zA-Z0-9_-]+)\]", text)
+                for tag in found:
+                    signatures.add(tag)
         print(f"[FACEBOOK LIVE] {len(signatures)} posted signatures retrieved from Page.")
     except Exception as e:
-        print(f"[FACEBOOK LIVE WARN] Could not query page: {e}")
+        print(f"[WARN] Could not retrieve Facebook live feed history: {e}")
     return signatures
 
 def download_file_direct(url: str, output_path: str) -> bool:
@@ -131,15 +130,33 @@ def fetch_archive_documentary(all_posted: set) -> dict:
         print("[WARN] All documentaries in pool were posted! Resetting selection...")
         available = ARCHIVE_DOCUMENTARY_POOL
 
-    chosen = available[0]
-    out_file = os.path.join(DOWNLOAD_DIR, f"{chosen['src_id']}.mp4")
-    if os.path.exists(out_file) and os.path.getsize(out_file) > 1024 * 1024:
-        chosen["local_path"] = out_file
-        return chosen
+    for chosen in available:
+        print(f"[*] Trying candidate: {chosen['title']} ({chosen['src_id']})")
+        out_file = os.path.join(DOWNLOAD_DIR, f"{chosen['src_id']}.mp4")
+        if os.path.exists(out_file) and os.path.getsize(out_file) > 1024 * 1024:
+            chosen["local_path"] = out_file
+            return chosen
 
-    if download_file_direct(chosen["url"], out_file):
-        chosen["local_path"] = out_file
-        return chosen
+        if download_file_direct(chosen["url"], out_file):
+            chosen["local_path"] = out_file
+            return chosen
+        print(f"[WARN] Failed to download {chosen['src_id']}, trying next candidate...")
+
+    # Fallback to local repository bank
+    bank_dir = "assets/documentary_bank"
+    if os.path.isdir(bank_dir):
+        for f in os.listdir(bank_dir):
+            if f.endswith(".mp4"):
+                lp = os.path.join(bank_dir, f)
+                if os.path.getsize(lp) > 1024 * 1024:
+                    print(f"[FALLBACK] Using local repository documentary: {lp}")
+                    return {
+                        "src_id": f.replace(".mp4", ""),
+                        "title": "Franklin D. Roosevelt: 1935 Historical State Restoration",
+                        "description": "Franklin D. Roosevelt: 1935 Historical State Restoration.\n\nArchival color and audio restored.\n\nFollow @ThePastAliveHistory for daily deep historical restorations! ⏳📜\n\n#ThePastAliveHistory #HistoryAlive #FDR #Documentary",
+                        "local_path": lp
+                    }
+
     return None
 
 def publish_documentary_to_facebook(doc_info: dict) -> dict:
@@ -152,9 +169,9 @@ def publish_documentary_to_facebook(doc_info: dict) -> dict:
     print(f"[*] Publishing documentary to Facebook Page '{page_id}' ({file_size_mb:.2f} MB)...")
     url = f"{FB_VIDEO_UPLOAD_URL}/{page_id}/videos"
 
-    # Strategy 1: Direct High-Speed Single-Shot Upload (< 120MB)
-    if file_size <= 120 * 1024 * 1024:
-        print(f"[*] File size ({file_size_mb:.2f} MB) is within direct upload limit. Uploading single-shot...")
+    # Strategy 1: Direct High-Speed Single-Shot Upload (< 100MB)
+    if file_size <= 100 * 1024 * 1024:
+        print(f"[*] File size ({file_size_mb:.2f} MB) <= 100MB. Uploading via high-speed direct multipart...")
         try:
             with open(file_path, "rb") as vf:
                 res = requests.post(
@@ -176,7 +193,7 @@ def publish_documentary_to_facebook(doc_info: dict) -> dict:
         except Exception as e:
             print(f"[DIRECT UPLOAD WARN]: {e}. Falling back to chunked upload...")
 
-    # Strategy 2: Official Resumable Multipart Chunked Upload (for any size)
+    # Strategy 2: Official Resumable Multipart Chunked Upload (for files > 100MB)
     print(f"[*] Starting Resumable Multipart Chunked Protocol for {file_size_mb:.2f} MB...")
     # Phase 1: Start
     init_res = requests.post(url, data={
