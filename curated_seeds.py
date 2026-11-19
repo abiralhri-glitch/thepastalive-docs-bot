@@ -1,6 +1,7 @@
 """
 Curated Seed Videos for 'The Past Alive History'
 Authentic historical restorations and documentaries from reference channels.
+100% English Captions, Titles, and Tags.
 """
 
 import os
@@ -15,8 +16,8 @@ OFFLINE_DOCUMENTARY_SEEDS = [
         "src_id": "doc_wall_street_1780s",
         "channel": "@restoredtimeline",
         "category": "Historical Restoration",
-        "title": "১৭৮০ সালের নিউ ইয়র্ক ও ওয়াল স্ট্রিটের আদি রূপ: অবিশ্বাস্য রূপান্তর! 🇺🇸🏛️",
-        "description": "২৪০ বছর আগে আমেরিকার প্রাণকেন্দ্র ওয়াল স্ট্রিট কেমন ছিল? আদি বসতি থেকে আজকের বিশ্ব অর্থনৈতিক রাজধানী হওয়ার রোমাঞ্চকর ইতিহাস। [src:doc_wall_street_1780s]\n\nইতিহাসের বিস্ময়কর অধ্যায় ও কালারাইজড অতীত দেখতে পেজটি ফলো করে সাথেই থাকুন! ⏳✨\n\n#ThePastAliveHistory #WallStreet #NewYorkHistory #HistoricalRestoration #DeepHistory #TimeTravel #WorldHistory",
+        "title": "Wall Street (1780s NYC): The Shocking Evolution From Muddy Trail to Financial Capital! 🇺🇸🏛️",
+        "description": "What did Wall Street look like 240 years ago? Step back in time to 1780s Manhattan and experience the rare historical transformation from an early colonial settlement into the undisputed financial center of the modern world. [src:doc_wall_street_1780s]\n\nFollow @ThePastAliveHistory for daily vivid historical restorations and lost moments of history brought back to life! ⏳✨\n\n#ThePastAliveHistory #HistoryAlive #WallStreet #NewYorkHistory #HistoricalRestoration #DeepHistory #TimeTravel #WorldHistory",
     },
     {
         "file": "doc_oppenheimer_polyglot.mp4",
@@ -24,8 +25,8 @@ OFFLINE_DOCUMENTARY_SEEDS = [
         "src_id": "doc_oppenheimer_polyglot",
         "channel": "@xixbacktolife",
         "category": "Historical Figures",
-        "title": "ওপেনহেইমার: পারমাণবিক বোমার জনক যিনি জানতেন ৬টি প্রাচীন ভাষা! 🧠📜",
-        "description": "গ্রিক, ল্যাটিন, ফ্রেঞ্চ, জার্মান, ডাচ এবং সংস্কৃত—ভগবদ্গীতার আসল অর্থ বুঝতে তিনি শিখেছিলেন সংস্কৃত ভাষা। শতাব্দীর অন্যতম রহস্যময় প্রতিভার অজানা ইতিহাস। [src:doc_oppenheimer_polyglot]\n\n#ThePastAliveHistory #Oppenheimer #HistoryFacts #RareHistory #HistoricalFootage #ScienceHistory #GeniusMind",
+        "title": "Did You Know? J. Robert Oppenheimer Spoke Six Languages Fluent! 🧠📜",
+        "description": "Greek, Latin, French, German, Dutch, and Sanskrit. Oppenheimer learned Sanskrit specifically to read the original Hindu sacred text Bhagavad Gita in its untranslated poetic form. Explore the brilliant and enigmatic mind behind the atomic bomb. [src:doc_oppenheimer_polyglot]\n\nFollow @ThePastAliveHistory for rare historical archives and forgotten stories! ⏳✨\n\n#ThePastAliveHistory #Oppenheimer #HistoryFacts #RareHistory #HistoricalFootage #ScienceHistory #GeniusMind",
     },
     {
         "file": "doc_fdr_1935_restored.mp4",
@@ -33,8 +34,8 @@ OFFLINE_DOCUMENTARY_SEEDS = [
         "src_id": "doc_fdr_1935_restored",
         "channel": "@xixbacktolife",
         "category": "Historical Restoration",
-        "title": "১৯৩৫: পোলিও আক্রান্ত ফ্র্যাঙ্কলিন রুজভেল্টের হেঁটে চলার একমাত্র বিরল ফুটেজ 🇺🇸📽️",
-        "description": "আমেরিকার ইতিহাসের অন্যতম শক্তিশালী প্রেসিডেন্ট যিনি পক্ষাঘাতগ্রস্ত হওয়া সত্ত্বেও জাতিকে পরিচালনা করেছিলেন। ১৯৩৫ সালের বিরল কালারাইজড জীবন্ত ইতিহাস। [src:doc_fdr_1935_restored]\n\n#ThePastAliveHistory #FDR #AmericanHistory #HistoricalFootage #ColorizedHistory #RareFootage #HistoryAlive",
+        "title": "1935: Rare Only Known Restored Footage of FDR Walking on His Own 🇺🇸📽️",
+        "description": "Franklin D. Roosevelt was diagnosed with polio in 1921, paralyzing him from the waist down. Despite this immense physical challenge, he led the United States through the Great Depression and World War II. This 1935 clip is the only known footage capturing FDR taking steps on his own. [src:doc_fdr_1935_restored]\n\nFollow @ThePastAliveHistory for rare historical footage and colorized restorations! ⏳✨\n\n#ThePastAliveHistory #FDR #AmericanHistory #HistoricalFootage #ColorizedHistory #RareFootage #HistoryAlive",
     },
     {
         "file": "doc_henry_viii_evolution.mp4",
@@ -42,7 +43,7 @@ OFFLINE_DOCUMENTARY_SEEDS = [
         "src_id": "doc_henry_viii_evolution",
         "channel": "@majesticaistudio",
         "category": "Royal History",
-        "title": "ইংল্যান্ডের কুখ্যাত রাজা অষ্টম হেনরির অবিশ্বাস্য শারীরিক রূপান্তর 👑⚔️",
-        "description": "সুদর্শন যুবক যুবরাজ থেকে ইংল্যান্ডের সবচেয়ে বিতর্কিত শাসকে পরিণত হওয়ার ইতিহাস। কালার ও ৩ডি ভিজ্যুয়াল পুনরুদ্ধার। [src:doc_henry_viii_evolution]\n\n#ThePastAliveHistory #KingHenryVIII #TudorHistory #BritishMonarchy #RoyalHistory #MajesticHistory",
+        "title": "The Shocking Physical Transformation of King Henry VIII 👑⚔️",
+        "description": "From a handsome, athletic Renaissance prince and champion jouster to one of the most tyrannical and physically deteriorated monarchs in British history. Witness the dramatic evolution of King Henry VIII reconstructed through historical portraits and cutting-edge 3D restoration. [src:doc_henry_viii_evolution]\n\nFollow @ThePastAliveHistory for vivid royal history and deep documentaries! ⏳✨\n\n#ThePastAliveHistory #KingHenryVIII #TudorHistory #BritishMonarchy #RoyalHistory #MajesticHistory",
     }
 ]
