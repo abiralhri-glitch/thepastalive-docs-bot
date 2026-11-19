@@ -1,11 +1,12 @@
 {
   "posted_ids": [
     "doc_wall_street_1780s",
-    "doc_oppenheimer_polyglot"
+    "doc_oppenheimer_polyglot",
+    "arch_battle_of_midway"
   ],
   "last_index": -1,
   "daily_stats": {
     "date": "2026-11-19",
-    "total_posted": 2
+    "total_posted": 3
   }
 }
