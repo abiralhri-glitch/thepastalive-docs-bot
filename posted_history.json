@@ -1,8 +1,10 @@
 {
-  "posted_ids": [],
+  "posted_ids": [
+    "doc_wall_street_1780s"
+  ],
   "last_index": -1,
   "daily_stats": {
     "date": "2026-11-19",
-    "total_posted": 0
+    "total_posted": 1
   }
 }
