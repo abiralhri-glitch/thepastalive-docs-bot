@@ -5,6 +5,7 @@ ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 DOWNLOAD_DIR = os.path.join(BASE_DIR, "downloads")
 OUTPUT_DIR = os.path.join(BASE_DIR, "output")
 WATERMARK_PNG = os.path.join(ASSETS_DIR, "watermark_pastalive.png")
+WATERMARK_BADGE_PNG = os.path.join(ASSETS_DIR, "watermark_badge.png")
 HISTORY_FILE = os.path.join(BASE_DIR, "posted_history.json")
 
 # Facebook Page Credentials for 'The Past Alive History'
