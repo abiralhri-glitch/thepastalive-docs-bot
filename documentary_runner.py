@@ -31,39 +31,39 @@ from config import (
 # Curated High-Definition Public Domain Historical Documentaries from Archive.org
 ARCHIVE_DOCUMENTARY_POOL = [
     {
-        "src_id": "arch_pearl_harbor",
-        "title": "Attack on Pearl Harbor (1941) - Historic Original Navy Combat Footage \U0001f1fa\U0001f1f8\u2693",
-        "url": "https://archive.org/download/AttackOnPearlHarbor1941/AttackOnPearlHarbor1941_512kb.mp4",
-        "description": "Attack on Pearl Harbor (December 7, 1941) \u2022 Historic Original Navy Combat Footage.\n\nRare historical archive capturing the devastating surprise assault on the US Pacific Fleet at Pearl Harbor, Hawaii. Features authentic frontline footage of battleships USS Arizona, USS West Virginia, and the immediate mobilization of American armed forces for World War II.\n\nFull Restored Documentary. [src:arch_pearl_harbor]\n\nFollow @ThePastAliveHistory for daily deep historical restorations, wartime chronicles, and forgotten world history brought back to life! \u23f3\U0001f4dc\n\n#ThePastAliveHistory #PearlHarbor #WWII #ColorHistory #USNavy #MilitaryHistory #HistoricalRestoration #DocumentaryArchive",
-        "category": "WWII History"
-    },
-    {
-        "src_id": "arch_dday_1944",
-        "title": "D-Day: The Normandy Invasion (June 6, 1944) - Allied Liberation of Europe \U0001fa96\u2694\ufe0f",
-        "url": "https://archive.org/download/d-day-the-sixth-of-june-1944-documentary/d-day-the-sixth-of-june-1944-documentary_512kb.mp4",
-        "description": "D-Day: The Sixth of June (1944) \u2022 Operation Overlord Historic Chronicle.\n\nThe largest amphibious invasion in human history: Allied troops storming the beaches of Normandy (Omaha, Utah, Gold, Juno, and Sword) to breach Hitler's Atlantic Wall and liberate Western Europe.\n\nFull Restored Documentary. [src:arch_dday_1944]\n\nFollow @ThePastAliveHistory for daily deep historical documentaries, wartime accounts, and military chronicles! \u23f3\U0001f4dc\n\n#ThePastAliveHistory #DDay #Normandy1944 #OperationOverlord #WWII #AlliedForces #MilitaryHistory #DocumentaryArchive",
-        "category": "WWII History"
-    },
-    {
-        "src_id": "arch_battle_of_midway",
-        "title": "The Battle of Midway (1942) - Original Color WWII Naval Battle Documentary \U0001f1fa\U0001f1f8\u2693",
-        "url": "https://archive.org/download/BattleOfMidway/BattleOfMidway_512kb.mp4",
-        "description": "The Battle of Midway (1942) \u2022 Historic Original Color Footage.\n\nExperience John Ford's Academy Award-winning documentary covering the pivotal turning point of the Pacific War in June 1942. Featuring authentic 16mm Kodachrome combat footage captured during the Japanese air raid on Midway Atoll and the counterstrikes by US carrier squadrons.\n\nFull Restored Documentary. [src:arch_battle_of_midway]\n\nFollow @ThePastAliveHistory for daily deep historical restorations, wartime chronicles, and forgotten moments of world civilization brought back to life! \u23f3\U0001f4dc\n\n#ThePastAliveHistory #HistoryAlive #BattleOfMidway #WWII #ColorHistory #HistoricalRestoration #NavalHistory #MilitaryHistory #Documentary",
-        "category": "WWII History"
-    },
-    {
-        "src_id": "arch_true_glory",
-        "title": "The True Glory (1945) - General Eisenhower's Allied Victory in Europe \U0001f396\ufe0f",
-        "url": "https://archive.org/download/TheTrueGlory1945/TheTrueGlory1945_512kb.mp4",
-        "description": "The True Glory (1945) \u2022 Academy Award Winner for Best Documentary Feature.\n\nCo-directed by Carol Reed and Garson Kanin, narrated by frontline Allied soldiers recounting the fierce road from Normandy across the Rhine all the way to Berlin and final victory in Europe.\n\nFull Restored Historical Feature. [src:arch_true_glory]\n\nFollow @ThePastAliveHistory for daily deep historical chronicles and rare wartime archives! \u23f3\U0001f4dc\n\n#ThePastAliveHistory #TheTrueGlory #WWII #Eisenhower #VictoryInEurope #MilitaryHistory #DocumentaryArchive",
-        "category": "WWII History"
-    },
-    {
-        "src_id": "arch_world_at_war",
-        "title": "The World at War (1942) - Frank Capra's Pearl Harbor & Global War Chronicle \U0001f30e",
-        "url": "https://archive.org/download/world_at_war_ep1/world_at_war_ep1_512kb.mp4",
-        "description": "The World at War (1942) \u2022 Landmark Wartime Documentary.\n\nAn official US War Department documentation chronicling the global events from 1931 to 1942, tracing the escalation of international conflict and the democratic defense of freedom across Europe and Asia.\n\nFull Restored Historical Episode. [src:arch_world_at_war]\n\nFollow @ThePastAliveHistory for daily deep historical documentaries and forgotten world history brought back to life! \u23f3\U0001f4dc\n\n#ThePastAliveHistory #WorldAtWar #WWIIHistory #FrankCapra #MilitaryHistory #DocumentaryArchive",
+        "src_id": "arch_prelude_to_war",
+        "title": "Prelude to War (1942) - Frank Capra's Why We Fight Series \U0001f30e\U0001f6e1\ufe0f",
+        "url": "https://archive.org/download/PreludeToWar/PreludeToWar_512kb.mp4",
+        "description": "Prelude to War (1942) \u2022 Academy Award Winner for Best Documentary Feature.\n\nFrank Capra examines the rise of fascism in Italy, Nazism in Germany, and militarism in Japan, contrasting totalitarianism with free democracies leading to World War II.\n\nFull Restored Episode. [src:arch_prelude_to_war]\n\nFollow @ThePastAliveHistory for daily deep historical archives and documentaries! \u23f3\U0001f4dc\n\n#ThePastAliveHistory #PreludeToWar #FrankCapra #WhyWeFight #WorldHistory #WWIIHistory #DocumentaryArchive",
         "category": "Geopolitical History"
+    },
+    {
+        "src_id": "arch_nazis_strike",
+        "title": "The Nazis Strike (1943) - The Geopolitical Conquest of Central Europe \u2694\ufe0f",
+        "url": "https://archive.org/download/TheNazisStrike/TheNazisStrike_512kb.mp4",
+        "description": "The Nazis Strike (1943) \u2022 Directed by Frank Capra & Anatole Litvak.\n\nA meticulous strategic breakdown of Germany's annexation of Austria, the Sudetenland crisis, the occupation of Czechoslovakia, and the 1939 blitzkrieg invasion of Poland.\n\nFull Historical Episode. [src:arch_nazis_strike]\n\nFollow @ThePastAliveHistory for daily deep historical chronicles! \u23f3\U0001f4dc\n\n#ThePastAliveHistory #TheNazisStrike #WWIIHistory #EuropeanHistory #Blitzkrieg #MilitaryHistory #DocumentaryArchive",
+        "category": "WWII History"
+    },
+    {
+        "src_id": "arch_memphis_belle",
+        "title": "The Memphis Belle: A Story of a Flying Fortress (1944) - 25 Combat Missions Over Europe \U0001f6e9\ufe0f",
+        "url": "https://archive.org/download/MemphisBelle/MemphisBelle_512kb.mp4",
+        "description": "The Memphis Belle: A Story of a Flying Fortress (1944) \u2022 Directed by William Wyler.\n\nThe real combat crew of the B-17 Flying Fortress 'Memphis Belle' on their 25th and final perilous daylight bombing mission over Nazi-occupied Europe before heading home.\n\nFull Restored Color Documentary. [src:arch_memphis_belle]\n\nFollow @ThePastAliveHistory for daily military aviation history and deep historical restorations! \u23f3\U0001f4dc\n\n#ThePastAliveHistory #MemphisBelle #B17 #AviationHistory #WWII #FlyingFortress #AirCombat #HistoricalRestoration #Documentary",
+        "category": "WWII Aviation"
+    },
+    {
+        "src_id": "arch_divide_and_conquer",
+        "title": "Divide and Conquer (1943) - The Fall of Denmark, Norway, and France \U0001f6e1\ufe0f\u2694\ufe0f",
+        "url": "https://archive.org/download/DivideAndConquer/DivideAndConquer_512kb.mp4",
+        "description": "Divide and Conquer (1943) \u2022 Frank Capra's Epic WWII Chronicles.\n\nAn authentic military analysis detailing the rapid spring 1940 offensive across Western Europe, the Dunkirk evacuation, and the resilience of the Allied resistance.\n\nFull Historical Episode. [src:arch_divide_and_conquer]\n\nFollow @ThePastAliveHistory for daily deep historical documentaries and forgotten world history brought back to life! \u23f3\U0001f4dc\n\n#ThePastAliveHistory #DivideAndConquer #FrankCapra #WWIIHistory #EuropeanHistory #DocumentaryArchive",
+        "category": "WWII History"
+    },
+    {
+        "src_id": "arch_war_comes_to_america",
+        "title": "War Comes to America (1945) - The Awakening of the United States \U0001f1fa\U0001f1f8\U0001f985",
+        "url": "https://archive.org/download/WarComesToAmerica/WarComesToAmerica_512kb.mp4",
+        "description": "War Comes to America (1945) \u2022 The Definitive Historical Chapter.\n\nA cinematic exploration of American identity, neutrality, and the dramatic cultural and industrial shift after the attack on Pearl Harbor, leading the country into World War II.\n\nFull Restored Historical Feature. [src:arch_war_comes_to_america]\n\nFollow @ThePastAliveHistory for daily deep historical documentaries and forgotten world history brought back to life! \u23f3\U0001f4dc\n\n#ThePastAliveHistory #WarComesToAmerica #FrankCapra #AmericanHistory #WWII #DocumentaryArchive",
+        "category": "American History"
     }
 ]
 
