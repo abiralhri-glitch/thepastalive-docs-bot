@@ -1,12 +1,12 @@
 """
-The Past Alive History - Automated Documentary & Historical Restoration Reel Bot
+The Past Alive History - Automated Documentary & Historical Restoration Video Bot
 - Dedicated to 'The Past Alive History' Facebook Page
-- 100% Non-Facebook Sources (Curated YouTube Shorts & 17 Reference Channels)
-- Smart Dual-Layer 1080x1920 Framing (Cinematic Background Blur + Uncropped Center)
-- Crystal-Clear Official Branding Watermark
-- Audio Loudnorm Normalization (Broadcast Standard)
-- Multi-Layer Zero-Duplicate Protection (Facebook Live Feed Verification + Signature Tracking)
-- Runs 3 Times Daily on GitHub Actions (06:00 PM, 09:00 PM, 03:00 AM BDT)
+- 100% Full Original Video (No forced blur cropping, native resolution & aspect ratio preserved)
+- 100% English Titles, Captions, and Descriptions
+- Sleek Official Corner Watermark Badge
+- Broadcast-grade Loudnorm Audio Normalization
+- Multi-Layer Zero-Duplicate Protection (Live Facebook Graph API Feed Verification)
+- 3 Daily Upload Slots on GitHub Actions (06:00 PM, 09:00 PM, 03:00 AM BDT)
 """
 
 import os
@@ -24,7 +24,7 @@ from config import (
     BASE_DIR,
     DOWNLOAD_DIR,
     OUTPUT_DIR,
-    WATERMARK_PNG,
+    WATERMARK_BADGE_PNG,
     HISTORY_FILE,
     FB_PAGE_ID,
     FB_PAGE_ACCESS_TOKEN,
@@ -103,7 +103,7 @@ def download_youtube_video(url: str, src_id: str) -> str:
     cmd = [
         "yt-dlp",
         "--extractor-args", "youtube:player_client=ios,web",
-        "-f", "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
+        "-f", "bestvideo[height<=1080]+bestaudio/best[height<=1080]/best",
         "--merge-output-format", "mp4",
         "-o", out_file,
         url
@@ -115,7 +115,7 @@ def download_youtube_video(url: str, src_id: str) -> str:
     return None
 
 def fetch_fresh_channel_video(all_posted: set) -> dict:
-    """Scrape fresh shorts from the 17 reference YouTube channels."""
+    """Scrape fresh documentary videos from the 17 reference YouTube channels."""
     channels = list(REFERENCE_YOUTUBE_CHANNELS)
     random.shuffle(channels)
     
@@ -141,17 +141,17 @@ def fetch_fresh_channel_video(all_posted: set) -> dict:
                     if src_id not in all_posted and len(vid_id) >= 5:
                         yt_url = f"https://www.youtube.com/watch?v={vid_id}"
                         assert_non_facebook_source(yt_url)
-                        print(f"[CHANNEL DISCOVERY] Found new documentary: {vid_title} from {ch_name}")
+                        print(f"[CHANNEL DISCOVERY] Found documentary: {vid_title} from {ch_name}")
                         dl_path = download_youtube_video(yt_url, src_id)
                         if dl_path:
-                            clean_title = vid_title.replace("#shorts", "").replace("#Shorts", "").strip()[:65]
+                            clean_title = vid_title.replace("#shorts", "").replace("#Shorts", "").strip()[:80]
                             return {
                                 "url": yt_url,
                                 "src_id": src_id,
                                 "channel": ch_name,
                                 "category": "Historical Restoration",
-                                "title": f"🏛️ {clean_title} ✨ | দ্য পাস্ট অ্যালাইভ হিস্ট্রি",
-                                "description": f"{vid_title}\n\nইতিহাসের বিস্ময়কর মুহূর্ত ও জীবন্ত অতীত দেখতে পেজটি ফলো করে সাথেই থাকুন! ⏳📜 [src:{src_id}]\n\n#ThePastAliveHistory #HistoryAlive #HistoricalRestoration #DocumentaryReels #WorldHistory #AncientHistory #ReliveHistory",
+                                "title": f"🏛️ {clean_title} | The Past Alive History",
+                                "description": f"{clean_title}\n\nExperience vivid historical restorations and forgotten moments of human civilization brought back to life! Follow @ThePastAliveHistory for daily deep documentaries. ⏳📜 [src:{src_id}]\n\n#ThePastAliveHistory #HistoryAlive #HistoricalRestoration #Documentary #WorldHistory #AncientHistory #TimeTravel #ReliveHistory",
                                 "local_path": dl_path
                             }
         except Exception as e:
@@ -159,28 +159,24 @@ def fetch_fresh_channel_video(all_posted: set) -> dict:
             continue
     return None
 
-def apply_smart_dual_layer_framing(input_video_path: str, output_path: str) -> str:
+def apply_full_video_branding(input_video_path: str, output_path: str) -> str:
     """
-    Apply Smart Dual-Layer 1080x1920 Framing:
-    - Zero cropping: Center video retains 100% original aspect ratio and subtitles.
-    - Blurred background: Scales and crops to fill 1080x1920 with cinematic gaussian blur.
-    - Official watermark overlay.
-    - Loudnorm audio normalization.
+    Renders the video in its FULL original aspect ratio and resolution:
+    - 100% full original video (no cropping, no forced blur bars, native resolution preserved)
+    - Pristine H.264 / AAC encoding with broadcast loudnorm audio
+    - Clean official branding watermark placed dynamically in top-right corner
     """
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     
     filter_complex = (
-        "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20:3,setsar=1[bg];"
-        "[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,setsar=1[fg];"
-        "[bg][fg]overlay=(W-w)/2:(H-h)/2[v_base];"
-        "[v_base][1:v]overlay=0:0[v_final];"
-        "[0:a]volume=1.1,loudnorm=I=-16:TP=-1.5:LRA=11[a_final]"
+        "[0:v][1:v]overlay=W-w-30:30[v_final];"
+        "[0:a]volume=1.05,loudnorm=I=-16:TP=-1.5:LRA=11[a_final]"
     )
 
     cmd = [
         FFMPEG_EXE, "-y",
         "-i", input_video_path,
-        "-i", WATERMARK_PNG,
+        "-i", WATERMARK_BADGE_PNG,
         "-filter_complex", filter_complex,
         "-map", "[v_final]",
         "-map", "[a_final]",
@@ -195,55 +191,30 @@ def apply_smart_dual_layer_framing(input_video_path: str, output_path: str) -> s
     return output_path
 
 def publish_video_to_facebook(video_path: str, title: str, description: str, page_id: str, access_token: str) -> dict:
-    """Upload video to Facebook Page Reels with Feed API fallback."""
+    """
+    Publishes full video directly to Facebook Page Feed & Watch via Graph API Videos endpoint.
+    Supports all aspect ratios (16:9 widescreen, 9:16 vertical, 1:1 square) in full original glory.
+    """
     file_size = os.path.getsize(video_path)
-    print(f"[*] Uploading to Facebook Page: {video_path} ({file_size / (1024 * 1024):.2f} MB)")
+    print(f"[*] Publishing Full Video to Facebook Page: {video_path} ({file_size / (1024 * 1024):.2f} MB)")
 
-    # Phase 1: Initialize session
-    init_url = f"{FB_GRAPH_URL}/{page_id}/video_reels"
-    init_res = requests.post(init_url, data={"upload_phase": "start", "access_token": access_token}, timeout=30)
-    init_data = init_res.json()
-
-    if "video_id" not in init_data:
-        print("[!] Reels API failed, using standard Videos Feed endpoint...")
-        url = f"{FB_GRAPH_URL}/{page_id}/videos"
-        with open(video_path, "rb") as f:
-            res = requests.post(
-                url,
-                files={"source": f},
-                data={"description": description, "title": title, "access_token": access_token},
-                timeout=120
-            )
-            return res.json()
-
-    video_id = init_data["video_id"]
-    upload_url = init_data.get("upload_url")
-
-    # Phase 2: Binary transfer
+    url = f"{FB_GRAPH_URL}/{page_id}/videos"
     with open(video_path, "rb") as f:
-        headers = {
-            "Authorization": f"OAuth {access_token}",
-            "offset": "0",
-            "file_size": str(file_size)
-        }
-        requests.post(upload_url, headers=headers, data=f, timeout=120)
-
-    # Phase 3: Publish
-    pub_url = f"{FB_GRAPH_URL}/{page_id}/video_reels"
-    pub_data = {
-        "upload_phase": "finish",
-        "access_token": access_token,
-        "video_id": video_id,
-        "video_state": "PUBLISHED",
-        "description": description,
-        "title": title
-    }
-    pub_res = requests.post(pub_url, data=pub_data, timeout=30)
-    return pub_res.json()
+        res = requests.post(
+            url,
+            files={"source": f},
+            data={
+                "description": description,
+                "title": title,
+                "access_token": access_token
+            },
+            timeout=180
+        )
+        return res.json()
 
 def run_documentary_bot():
     print("=" * 65)
-    print("🚀 THE PAST ALIVE HISTORY - AUTOMATED DOCUMENTARY POSTING BOT")
+    print("🚀 THE PAST ALIVE HISTORY - AUTOMATED FULL DOCUMENTARY VIDEO BOT")
     print(f"Timestamp: {datetime.datetime.now(datetime.timezone.utc).isoformat()}")
     print("=" * 65)
 
@@ -259,27 +230,27 @@ def run_documentary_bot():
 
     print(f"[*] Total unique posted videos tracked: {len(all_posted)}")
 
-    # Step 2: Content Selection
+    # Step 2: Content Selection (100% English titles & captions)
     target_item = None
 
-    # Priority A: Curated Seeds in Repository Bank
+    # Priority A: Curated Repository Video Bank
     for seed in OFFLINE_DOCUMENTARY_SEEDS:
         src_id = seed["src_id"]
         local_f = os.path.join(seed["dir"], seed["file"])
         if src_id not in all_posted and os.path.exists(local_f) and os.path.getsize(local_f) > 50000:
-            print(f"[SELECTION] Selecting curated repository reel: {seed['title']}")
+            print(f"[SELECTION] Selecting curated repository documentary: {seed['title']}")
             target_item = seed.copy()
             target_item["local_path"] = local_f
             break
 
     # Priority B: Reference Channels Dynamic Scraper
     if not target_item:
-        print("[*] Checking 17 reference YouTube channels for fresh shorts...")
+        print("[*] Checking 17 reference YouTube channels for fresh documentaries...")
         target_item = fetch_fresh_channel_video(all_posted)
 
     # Priority C: Recycling unposted repository seed if all published
     if not target_item:
-        print("[*] Rotating through available repository reels...")
+        print("[*] Rotating through available repository documentaries...")
         for seed in OFFLINE_DOCUMENTARY_SEEDS:
             local_f = os.path.join(seed["dir"], seed["file"])
             if os.path.exists(local_f) and os.path.getsize(local_f) > 50000:
@@ -288,21 +259,21 @@ def run_documentary_bot():
                 break
 
     if not target_item:
-        print("[ERROR] Could not find any valid documentary reel!")
+        print("[ERROR] Could not find any valid documentary video!")
         sys.exit(1)
 
     print(f"[*] Target video ready: {target_item['title']} (src: {target_item['src_id']})")
 
-    # Step 3: Video Framing & Watermarking
+    # Step 3: Full Video Rendering & Watermarking (100% Full Video, Original Aspect Ratio)
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     final_output = os.path.join(OUTPUT_DIR, f"final_{target_item['src_id']}.mp4")
     
-    print("[*] Applying 1080x1920 Smart Dual-Layer Framing & Watermarking...")
-    apply_smart_dual_layer_framing(target_item["local_path"], final_output)
+    print("[*] Applying Full Video Branding (Preserving original aspect ratio & full video)...")
+    apply_full_video_branding(target_item["local_path"], final_output)
     print(f"[+] Render complete: {final_output} ({os.path.getsize(final_output) / (1024 * 1024):.2f} MB)")
 
-    # Step 4: Publish to Facebook Page
-    print("[*] Publishing to Facebook Page 'The Past Alive History'...")
+    # Step 4: Publish Full Video to Facebook Page
+    print("[*] Publishing Full Video to Facebook Page 'The Past Alive History'...")
     fb_res = publish_video_to_facebook(
         video_path=final_output,
         title=target_item["title"],
@@ -316,7 +287,7 @@ def run_documentary_bot():
     history["posted_ids"].append(target_item["src_id"])
     history["daily_stats"]["total_posted"] = history["daily_stats"].get("total_posted", 0) + 1
     save_local_history(history)
-    print(f"✅ Successfully posted '{target_item['title']}'! Daily total: {history['daily_stats']['total_posted']}")
+    print(f"✅ Successfully posted full video '{target_item['title']}'! Daily total: {history['daily_stats']['total_posted']}")
 
 if __name__ == "__main__":
     run_documentary_bot()
