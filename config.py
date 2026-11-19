@@ -7,7 +7,10 @@ OUTPUT_DIR = os.path.join(BASE_DIR, "output")
 WATERMARK_PNG = os.path.join(ASSETS_DIR, "watermark_pastalive.png")
 HISTORY_FILE = os.path.join(BASE_DIR, "posted_history.json")
 
-# Facebook Page Credentials
-FB_PAGE_ID = os.environ.get("FB_PAGE_ID", "61596668402545")
-FB_PAGE_ACCESS_TOKEN = os.environ.get("FB_PAGE_ACCESS_TOKEN", "")
+# Facebook Page Credentials for 'The Past Alive History'
+FB_PAGE_ID = os.environ.get("FB_PAGE_ID", "1357435984129397")
+FB_PAGE_ACCESS_TOKEN = os.environ.get(
+    "FB_PAGE_ACCESS_TOKEN",
+    "EAAe1H3izQCYBTFBsFmilBN6vpz92Y9ZAZB6ZCDJpPtsHFkDy6V4DnsEXcEbjLYK1sdII4rlTNOjBWUQXpcMOTljh7ioCA5Nk46fvYAH10XywkKk0DUoYvwCa8UeDYcZAaeCORJYgChh3FPZCFbJw0U2AIuGtvhC2ebTdy6ovuYiEfwA6nDKDCZCbKY6yqOZBZBHKXtyhJnRZAiZBPH8itXEfwu2ZBsvZAhxIByPF4vbZBnjvC"
+)
 FB_GRAPH_URL = "https://graph.facebook.com/v21.0"
