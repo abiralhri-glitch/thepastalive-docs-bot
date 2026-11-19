@@ -31,7 +31,7 @@ from config import (
     FB_GRAPH_URL
 )
 from documentary_sources import REFERENCE_YOUTUBE_CHANNELS, DYNAMIC_SEARCH_QUERIES
-from curated_seeds import CURATED_DOCUMENTARY_SEEDS
+from curated_seeds import OFFLINE_DOCUMENTARY_SEEDS
 
 FFMPEG_EXE = imageio_ffmpeg.get_ffmpeg_exe()
 
@@ -102,8 +102,8 @@ def download_youtube_video(url: str, src_id: str) -> str:
 
     cmd = [
         "yt-dlp",
-        "--extractor-args", "youtube:player_client=android",
-        "-f", "bestvideo[height<=1080]+bestaudio/best[height<=1080]/best",
+        "--extractor-args", "youtube:player_client=ios,web",
+        "-f", "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
         "--merge-output-format", "mp4",
         "-o", out_file,
         url
@@ -111,7 +111,7 @@ def download_youtube_video(url: str, src_id: str) -> str:
     res = subprocess.run(cmd, capture_output=True, text=True)
     if os.path.exists(out_file) and os.path.getsize(out_file) > 100000:
         return out_file
-    print(f"[YT-DLP WARN] Download failed: {res.stderr[:300]}")
+    print(f"[YT-DLP WARN] Download failed: {res.stderr[:200]}")
     return None
 
 def fetch_fresh_channel_video(all_posted: set) -> dict:
@@ -126,13 +126,13 @@ def fetch_fresh_channel_video(all_posted: set) -> dict:
         try:
             cmd = [
                 "yt-dlp",
-                "--extractor-args", "youtube:player_client=android",
+                "--extractor-args", "youtube:player_client=ios,web",
                 "--flat-playlist",
-                "-I", "1:15",
+                "-I", "1:10",
                 "--print", "%(id)s | %(title)s | %(duration)s",
                 ch_url
             ]
-            res = subprocess.run(cmd, capture_output=True, text=True, timeout=40)
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             for line in res.stdout.strip().splitlines():
                 parts = [p.strip() for p in line.split("|")]
                 if len(parts) >= 2:
@@ -141,7 +141,7 @@ def fetch_fresh_channel_video(all_posted: set) -> dict:
                     if src_id not in all_posted and len(vid_id) >= 5:
                         yt_url = f"https://www.youtube.com/watch?v={vid_id}"
                         assert_non_facebook_source(yt_url)
-                        print(f"[CHANNEL DISCOVERY] Found new documentary video: {vid_title} from {ch_name}")
+                        print(f"[CHANNEL DISCOVERY] Found new documentary: {vid_title} from {ch_name}")
                         dl_path = download_youtube_video(yt_url, src_id)
                         if dl_path:
                             clean_title = vid_title.replace("#shorts", "").replace("#Shorts", "").strip()[:65]
@@ -156,46 +156,6 @@ def fetch_fresh_channel_video(all_posted: set) -> dict:
                             }
         except Exception as e:
             print(f"[CHANNEL SCRAPE WARN] {ch_name}: {e}")
-            continue
-    return None
-
-def fetch_fresh_search_video(all_posted: set) -> dict:
-    """Fallback search across historical documentary queries."""
-    queries = list(DYNAMIC_SEARCH_QUERIES)
-    random.shuffle(queries)
-    for q in queries:
-        try:
-            cmd = [
-                "yt-dlp",
-                "--extractor-args", "youtube:player_client=android",
-                f"ytsearch10:{q}",
-                "--print", "%(id)s | %(title)s | %(duration)s",
-                "--no-playlist"
-            ]
-            res = subprocess.run(cmd, capture_output=True, text=True, timeout=40)
-            for line in res.stdout.strip().splitlines():
-                parts = [p.strip() for p in line.split("|")]
-                if len(parts) >= 2:
-                    vid_id, vid_title = parts[0], parts[1]
-                    src_id = f"yt_{vid_id}"
-                    if src_id not in all_posted and len(vid_id) >= 5:
-                        yt_url = f"https://www.youtube.com/watch?v={vid_id}"
-                        assert_non_facebook_source(yt_url)
-                        print(f"[SEARCH DISCOVERY] Found documentary reel: {vid_title}")
-                        dl_path = download_youtube_video(yt_url, src_id)
-                        if dl_path:
-                            clean_title = vid_title.replace("#shorts", "").replace("#Shorts", "").strip()[:65]
-                            return {
-                                "url": yt_url,
-                                "src_id": src_id,
-                                "channel": "Historical Archives",
-                                "category": "Documentary",
-                                "title": f"📜 {clean_title} ⏳ | দ্য পাস্ট অ্যালাইভ হিস্ট্রি",
-                                "description": f"{vid_title}\n\nঅতীতের হারিয়ে যাওয়া সভ্যতা ও রোমাঞ্চকর ইতিহাস। [src:{src_id}]\n\n#ThePastAliveHistory #DeepHistory #HistoricalDocumentary #TimeTravel #LostWonders",
-                                "local_path": dl_path
-                            }
-        except Exception as e:
-            print(f"[SEARCH SCRAPE WARN] {q}: {e}")
             continue
     return None
 
@@ -302,28 +262,33 @@ def run_documentary_bot():
     # Step 2: Content Selection
     target_item = None
 
-    # Priority A: Curated Seeds
-    for seed in CURATED_DOCUMENTARY_SEEDS:
-        if seed["src_id"] not in all_posted:
-            print(f"[SELECTION] Selecting curated seed: {seed['title']}")
-            dl_path = download_youtube_video(seed["url"], seed["src_id"])
-            if dl_path:
-                target_item = seed.copy()
-                target_item["local_path"] = dl_path
-                break
+    # Priority A: Curated Seeds in Repository Bank
+    for seed in OFFLINE_DOCUMENTARY_SEEDS:
+        src_id = seed["src_id"]
+        local_f = os.path.join(seed["dir"], seed["file"])
+        if src_id not in all_posted and os.path.exists(local_f) and os.path.getsize(local_f) > 50000:
+            print(f"[SELECTION] Selecting curated repository reel: {seed['title']}")
+            target_item = seed.copy()
+            target_item["local_path"] = local_f
+            break
 
-    # Priority B: Reference Channels Scraper
+    # Priority B: Reference Channels Dynamic Scraper
     if not target_item:
         print("[*] Checking 17 reference YouTube channels for fresh shorts...")
         target_item = fetch_fresh_channel_video(all_posted)
 
-    # Priority C: Dynamic Query Search
+    # Priority C: Recycling unposted repository seed if all published
     if not target_item:
-        print("[*] Fallback: Searching historical documentary queries...")
-        target_item = fetch_fresh_search_video(all_posted)
+        print("[*] Rotating through available repository reels...")
+        for seed in OFFLINE_DOCUMENTARY_SEEDS:
+            local_f = os.path.join(seed["dir"], seed["file"])
+            if os.path.exists(local_f) and os.path.getsize(local_f) > 50000:
+                target_item = seed.copy()
+                target_item["local_path"] = local_f
+                break
 
     if not target_item:
-        print("[ERROR] Could not find any fresh unposted documentary video!")
+        print("[ERROR] Could not find any valid documentary reel!")
         sys.exit(1)
 
     print(f"[*] Target video ready: {target_item['title']} (src: {target_item['src_id']})")
