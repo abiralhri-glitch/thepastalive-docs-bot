@@ -9,6 +9,7 @@ The Past Alive History - Automated Full Documentary Video Engine
 """
 
 import os
+import re
 import sys
 import json
 import time
@@ -31,37 +32,37 @@ from config import (
 ARCHIVE_DOCUMENTARY_POOL = [
     {
         "src_id": "arch_fighting_lady",
-        "title": "The Fighting Lady (1944) - Life Aboard an Aircraft Carrier in the Pacific",
+        "title": "The Fighting Lady (1944) - Life Aboard an Aircraft Carrier in the Pacific 🚢✈️",
         "url": "https://archive.org/download/FightingLady/FightingLady_512kb.mp4",
-        "description": "The Fighting Lady (1944) • Academy Award-Winning Color Documentary.\n\nA vivid look at daily life, intense aerial dogfights, and heroic operations aboard the USS Yorktown (CV-10) during combat missions in the Pacific Ocean theater of World War II.\n\nFull Restored Documentary. [src:arch_fighting_lady]\n\nFollow @ThePastAliveHistory for daily deep historical documentaries, naval chronicles, and forgotten world history brought back to life!\n\n#ThePastAliveHistory #HistoryAlive #TheFightingLady #AviationHistory #AircraftCarrier #WWII #ColorFootage #NavalHistory #Documentary",
+        "description": "The Fighting Lady (1944) • Academy Award-Winning Color Documentary.\n\nA vivid look at daily life, intense aerial dogfights, and heroic operations aboard the USS Yorktown (CV-10) during combat missions in the Pacific Ocean theater of World War II.\n\nFull Restored Documentary. [src:arch_fighting_lady]\n\nFollow @ThePastAliveHistory for daily deep historical documentaries, naval chronicles, and forgotten world history brought back to life! ⏳📜\n\n#ThePastAliveHistory #HistoryAlive #TheFightingLady #AviationHistory #AircraftCarrier #WWII #ColorFootage #NavalHistory #Documentary",
         "category": "Aviation & Naval History"
     },
     {
+        "src_id": "arch_memphis_belle",
+        "title": "The Memphis Belle: A Story of a Flying Fortress (1944) - 25 Combat Missions Over Europe 🛩️",
+        "url": "https://archive.org/download/TheMemphisBelleAStoryOfAFlyingFortress/TheMemphisBelle_512kb.mp4",
+        "description": "The Memphis Belle: A Story of a Flying Fortress (1944) • Directed by William Wyler.\n\nThe real combat crew of the B-17 Flying Fortress 'Memphis Belle' on their 25th and final perilous daylight bombing mission over Nazi-occupied Europe before heading home.\n\nFull Restored Color Documentary. [src:arch_memphis_belle]\n\nFollow @ThePastAliveHistory for daily military aviation history and deep historical restorations! ⏳📜\n\n#ThePastAliveHistory #MemphisBelle #B17 #AviationHistory #WWII #FlyingFortress #AirCombat #HistoricalRestoration #Documentary",
+        "category": "WWII Aviation"
+    },
+    {
         "src_id": "arch_prelude_to_war",
-        "title": "Prelude to War (1942) - Frank Capra's Why We Fight Series",
-        "url": "https://archive.org/download/prelude_to_war/prelude_to_war_512kb.mp4",
-        "description": "Prelude to War (1942) • Academy Award Winner for Best Documentary Feature.\n\nFrank Capra examines the rise of fascism in Italy, Nazism in Germany, and militarism in Japan, contrasting totalitarianism with free democracies leading to World War II.\n\nFull Episode Restoration. [src:arch_prelude_to_war]\n\nFollow @ThePastAliveHistory for daily deep historical archives and documentaries!\n\n#ThePastAliveHistory #PreludeToWar #FrankCapra #WhyWeFight #WorldHistory #WWIIHistory #DocumentaryArchive",
+        "title": "Prelude to War (1942) - Frank Capra's Why We Fight Series 🌍🛡️",
+        "url": "https://archive.org/download/prelude_to_war_ipod/prelude_to_war_512kb.mp4",
+        "description": "Prelude to War (1942) • Academy Award Winner for Best Documentary Feature.\n\nFrank Capra examines the rise of fascism in Italy, Nazism in Germany, and militarism in Japan, contrasting totalitarianism with free democracies leading to World War II.\n\nFull Episode Restoration. [src:arch_prelude_to_war]\n\nFollow @ThePastAliveHistory for daily deep historical archives and documentaries! ⏳📜\n\n#ThePastAliveHistory #PreludeToWar #FrankCapra #WhyWeFight #WorldHistory #WWIIHistory #DocumentaryArchive",
         "category": "Geopolitical History"
     },
     {
-        "src_id": "arch_nazis_strike",
-        "title": "The Nazis Strike (1943) - The Geopolitical Conquest of Central Europe",
-        "url": "https://archive.org/download/TheNazisStrike/TheNazisStrike_512kb.mp4",
-        "description": "The Nazis Strike (1943) • Directed by Frank Capra & Anatole Litvak.\n\nA meticulous strategic breakdown of Germany's annexation of Austria, the Sudetenland crisis, the occupation of Czechoslovakia, and the 1939 blitzkrieg invasion of Poland.\n\nFull Historical Episode. [src:arch_nazis_strike]\n\nFollow @ThePastAliveHistory for daily deep historical chronicles!\n\n#ThePastAliveHistory #TheNazisStrike #WWIIHistory #EuropeanHistory #Blitzkrieg #MilitaryHistory #DocumentaryArchive",
-        "category": "WWII History"
-    },
-    {
-        "src_id": "arch_december_7th",
-        "title": "December 7th: The Movie (1943) - John Ford's Pearl Harbor Color Documentary",
-        "url": "https://archive.org/download/December7th/December7th_512kb.mp4",
-        "description": "December 7th (1943) • Directed by John Ford & Gregg Toland.\n\nThe official United States Navy documentary depicting the dramatic events before, during, and after the surprise attack on Pearl Harbor on December 7, 1941.\n\nFull Restored Documentary. [src:arch_december_7th]\n\nFollow @ThePastAliveHistory for daily deep historical chronicles and documentary restorations!\n\n#ThePastAliveHistory #December7th #PearlHarbor #WWII #NavalHistory #JohnFord #MilitaryHistory #Documentary",
-        "category": "WWII History"
-    },
-    {
         "src_id": "arch_battle_of_midway",
-        "title": "The Battle of Midway (1942) - Original Color WWII Naval Battle Documentary",
+        "title": "The Battle of Midway (1942) - Original Color WWII Naval Battle Documentary 🇺🇸⚓",
         "url": "https://archive.org/download/BattleOfMidway/BattleOfMidway_512kb.mp4",
-        "description": "The Battle of Midway (1942) • Historic Original Color Footage.\n\nExperience John Ford's Academy Award-winning documentary covering the pivotal turning point of the Pacific War in June 1942. Featuring authentic 16mm Kodachrome combat footage captured during the Japanese air raid on Midway Atoll and the counterstrikes by US carrier squadrons.\n\nFull Restored Documentary. [src:arch_battle_of_midway]\n\nFollow @ThePastAliveHistory for daily deep historical restorations, wartime chronicles, and forgotten moments of world civilization brought back to life!\n\n#ThePastAliveHistory #HistoryAlive #BattleOfMidway #WWII #ColorHistory #HistoricalRestoration #NavalHistory #MilitaryHistory #Documentary",
+        "description": "The Battle of Midway (1942) • Historic Original Color Footage.\n\nExperience John Ford's Academy Award-winning documentary covering the pivotal turning point of the Pacific War in June 1942. Featuring authentic 16mm Kodachrome combat footage captured during the Japanese air raid on Midway Atoll and the counterstrikes by US carrier squadrons.\n\nFull Restored Documentary. [src:arch_battle_of_midway]\n\nFollow @ThePastAliveHistory for daily deep historical restorations, wartime chronicles, and forgotten moments of world civilization brought back to life! ⏳📜\n\n#ThePastAliveHistory #HistoryAlive #BattleOfMidway #WWII #ColorHistory #HistoricalRestoration #NavalHistory #MilitaryHistory #Documentary",
+        "category": "WWII History"
+    },
+    {
+        "src_id": "arch_nazis_strike",
+        "title": "The Nazis Strike (1943) - The Geopolitical Conquest of Central Europe ⚔️",
+        "url": "https://archive.org/download/TheNazisStrike/TheNazisStrike_512kb.mp4",
+        "description": "The Nazis Strike (1943) • Directed by Frank Capra & Anatole Litvak.\n\nA meticulous strategic breakdown of Germany's annexation of Austria, the Sudetenland crisis, the occupation of Czechoslovakia, and the 1939 blitzkrieg invasion of Poland.\n\nFull Historical Episode. [src:arch_nazis_strike]\n\nFollow @ThePastAliveHistory for daily deep historical chronicles! ⏳📜\n\n#ThePastAliveHistory #TheNazisStrike #WWIIHistory #EuropeanHistory #Blitzkrieg #MilitaryHistory #DocumentaryArchive",
         "category": "WWII History"
     }
 ]
@@ -94,18 +95,9 @@ def get_posted_signatures_from_facebook(page_id: str, access_token: str, limit: 
             data = res.json().get("data", [])
             for item in data:
                 text = (item.get("description") or "") + " " + (item.get("title") or "")
-                idx = 0
-                while True:
-                    start = text.find("[src:", idx)
-                    if start == -1:
-                        break
-                    end = text.find("]", start)
-                    if end == -1:
-                        break
-                    sig = text[start + 5:end].strip()
-                    if sig:
-                        signatures.add(sig)
-                    idx = end + 1
+                src_matches = re.findall(r"\[src:([a-zA-Z0-9_\-]+)\]", text)
+                for sm in src_matches:
+                    signatures.add(sm)
         print(f"[FACEBOOK LIVE] {len(signatures)} posted signatures retrieved from Page.")
     except Exception as e:
         print(f"[FACEBOOK LIVE WARN] Could not query page: {e}")
@@ -134,9 +126,8 @@ def fetch_archive_documentary(all_posted: set) -> dict:
     available = [doc for doc in ARCHIVE_DOCUMENTARY_POOL if doc["src_id"] not in all_posted]
     if not available:
         print("[WARN] All documentaries in pool were posted! Cycling pool with randomized selection...")
-        available = list(ARCHIVE_DOCUMENTARY_POOL)
+        available = ARCHIVE_DOCUMENTARY_POOL
 
-    random.shuffle(available)
     for chosen in available:
         print(f"[*] Trying documentary candidate: {chosen['title']}")
         out_file = os.path.join(DOWNLOAD_DIR, f"{chosen['src_id']}.mp4")
@@ -147,8 +138,6 @@ def fetch_archive_documentary(all_posted: set) -> dict:
         if download_file_direct(chosen["url"], out_file):
             chosen["local_path"] = out_file
             return chosen
-        print(f"[WARN] Failed to download {chosen['src_id']}, trying next candidate...")
-
     return None
 
 def publish_documentary_to_facebook(doc_info: dict) -> dict:
@@ -158,6 +147,70 @@ def publish_documentary_to_facebook(doc_info: dict) -> dict:
     file_size = os.path.getsize(file_path)
 
     print(f"[*] Publishing documentary to Facebook Page '{page_id}' ({file_size / (1024*1024):.2f} MB)...")
+
+    # Resumable Chunked Protocol for resilient long video upload
+    try:
+        init_url = f"{FB_GRAPH_URL}/{page_id}/videos"
+        init_res = requests.post(
+            init_url,
+            data={
+                "upload_phase": "start",
+                "file_size": file_size,
+                "access_token": access_token
+            },
+            timeout=35
+        )
+        init_json = init_res.json()
+        if "upload_session_id" in init_json:
+            session_id = init_json["upload_session_id"]
+            video_id = init_json.get("video_id")
+            start_offset = int(init_json.get("start_offset", 0))
+            chunk_size = 8 * 1024 * 1024
+            print(f"[+] Initialized Resumable Upload Session: {session_id}")
+
+            with open(file_path, "rb") as f:
+                f.seek(start_offset)
+                while start_offset < file_size:
+                    chunk = f.read(chunk_size)
+                    if not chunk:
+                        break
+                    headers = {
+                        "Authorization": f"OAuth {access_token}",
+                        "offset": str(start_offset),
+                        "file_size": str(file_size)
+                    }
+                    c_res = requests.post(
+                        f"{FB_VIDEO_UPLOAD_URL}/{page_id}/videos",
+                        data=chunk,
+                        headers=headers,
+                        params={"upload_phase": "transfer", "upload_session_id": session_id},
+                        timeout=180
+                    )
+                    c_data = c_res.json()
+                    start_offset = int(c_data.get("start_offset", start_offset + len(chunk)))
+                    print(f"[+] Chunk uploaded: {start_offset / (1024*1024):.1f} / {file_size / (1024*1024):.1f} MB")
+
+            finish_data = {
+                "upload_phase": "finish",
+                "upload_session_id": session_id,
+                "title": doc_info["title"][:100],
+                "description": doc_info["description"],
+                "published": "true",
+                "access_token": access_token
+            }
+            finish_res = requests.post(init_url, data=finish_data, timeout=60)
+            res_json = finish_res.json()
+            pub_video_id = res_json.get("id") or video_id or session_id
+            res_json["id"] = pub_video_id
+            print(f"[FACEBOOK API RESPONSE]: Status {finish_res.status_code} - {res_json}")
+            print(f"🎉 Documentary Published Successfully! Facebook Video ID: {pub_video_id}")
+            return {"id": pub_video_id, "success": True, "response": res_json}
+        else:
+            print(f"[WARN] Resumable start returned: {init_json}, falling back to direct upload...")
+    except Exception as e:
+        print(f"[WARN] Resumable upload warning: {e}, falling back to direct upload...")
+
+    # Fallback to direct multipart upload
     url = f"{FB_VIDEO_UPLOAD_URL}/{page_id}/videos"
     with open(file_path, "rb") as f:
         res = requests.post(
@@ -171,7 +224,10 @@ def publish_documentary_to_facebook(doc_info: dict) -> dict:
             },
             timeout=600
         )
-        res_json = res.json()
+        try:
+            res_json = res.json()
+        except Exception:
+            res_json = {"status_code": res.status_code, "text": res.text[:200]}
         print(f"[FACEBOOK API RESPONSE]: Status {res.status_code} - {res_json}")
         if "id" in res_json:
             print(f"🎉 Documentary Published Successfully! Facebook Video ID: {res_json['id']}")
@@ -206,7 +262,7 @@ def run_documentary_bot():
         history["fb_video_ids"] = []
     history["fb_video_ids"].append(upload_res.get("id"))
     save_local_history(history)
-    print("✅ State successfully updated. Video live on Page feed!")
+    print(f"✅ State successfully updated. Video live on Page feed!")
 
 if __name__ == "__main__":
     run_documentary_bot()
