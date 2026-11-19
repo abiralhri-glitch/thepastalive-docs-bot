@@ -3,7 +3,10 @@ The Past Alive History - Automated Full Documentary Video Engine
 - Dedicated to 'The Past Alive History' Facebook Page (ID: 1357435984129397)
 - 100% Full-Length Documentary Videos (Original length, widescreen 16:9 HD)
 - 100% English Titles, Storytelling Captions, and Historical Tags
-- Multi-Tier Facebook Video Ingestion: Direct High-Speed Multipart (<90MB), Server-Side Direct Ingestion (file_url), and Resumable Chunked Protocol
+- Dual Video Upload Architecture:
+    1. Direct High-Speed Single-Shot Upload (for files <= 100 MB)
+    2. Resumable Multipart Chunked Upload (for files > 100 MB)
+- Verified Facebook Video Graph API Publishing with Direct Feed Distribution
 - Multi-Layer Zero-Duplicate Protection (Live Facebook Page Graph Feed + Local History Tracking)
 - Resilient Guaranteed Archive.org Documentary Pool
 """
@@ -28,6 +31,7 @@ from config import (
     FB_VIDEO_UPLOAD_URL
 )
 
+# Curated High-Definition Public Domain Historical Documentaries from Archive.org
 ARCHIVE_DOCUMENTARY_POOL = [
     {
         "src_id": "arch_battle_of_midway",
@@ -37,18 +41,18 @@ ARCHIVE_DOCUMENTARY_POOL = [
         "category": "WWII History"
     },
     {
-        "src_id": "arch_fighting_lady",
-        "title": "The Fighting Lady (1944) - Life Aboard an Aircraft Carrier in the Pacific 🚢✈️",
-        "url": "https://archive.org/download/FightingLady/FightingLady_512kb.mp4",
-        "description": "The Fighting Lady (1944) • Academy Award-Winning Color Documentary.\n\nA vivid look at daily life, intense aerial dogfights, and heroic operations aboard the USS Yorktown (CV-10) during combat missions in the Pacific Ocean theater of World War II.\n\nFull Restored Documentary. [src:arch_fighting_lady]\n\nFollow @ThePastAliveHistory for daily deep historical documentaries, naval chronicles, and forgotten world history brought back to life! ⏳📜\n\n#ThePastAliveHistory #HistoryAlive #TheFightingLady #AviationHistory #AircraftCarrier #WWII #ColorFootage #NavalHistory #Documentary",
-        "category": "Aviation & Naval History"
-    },
-    {
         "src_id": "arch_memphis_belle",
         "title": "The Memphis Belle: A Story of a Flying Fortress (1944) - 25 Combat Missions Over Europe 🛩️",
         "url": "https://archive.org/download/TheMemphisBelleAStoryOfAFlyingFortress/TheMemphisBelle_512kb.mp4",
         "description": "The Memphis Belle: A Story of a Flying Fortress (1944) • Directed by William Wyler.\n\nThe real combat crew of the B-17 Flying Fortress 'Memphis Belle' on their 25th and final perilous daylight bombing mission over Nazi-occupied Europe before heading home.\n\nFull Restored Color Documentary. [src:arch_memphis_belle]\n\nFollow @ThePastAliveHistory for daily military aviation history and deep historical restorations! ⏳📜\n\n#ThePastAliveHistory #MemphisBelle #B17 #AviationHistory #WWII #FlyingFortress #AirCombat #HistoricalRestoration #Documentary",
         "category": "WWII Aviation"
+    },
+    {
+        "src_id": "arch_fighting_lady",
+        "title": "The Fighting Lady (1944) - Life Aboard an Aircraft Carrier in the Pacific 🚢✈️",
+        "url": "https://archive.org/download/FightingLady/FightingLady_512kb.mp4",
+        "description": "The Fighting Lady (1944) • Academy Award-Winning Color Documentary.\n\nA vivid look at daily life, intense aerial dogfights, and heroic operations aboard the USS Yorktown (CV-10) during combat missions in the Pacific Ocean theater of World War II.\n\nFull Restored Documentary. [src:arch_fighting_lady]\n\nFollow @ThePastAliveHistory for daily deep historical documentaries, naval chronicles, and forgotten world history brought back to life! ⏳📜\n\n#ThePastAliveHistory #HistoryAlive #TheFightingLady #AviationHistory #AircraftCarrier #WWII #ColorFootage #NavalHistory #Documentary",
+        "category": "Aviation & Naval History"
     },
     {
         "src_id": "arch_prelude_to_war",
@@ -124,18 +128,18 @@ def fetch_archive_documentary(all_posted: set) -> dict:
     print("[*] Selecting fresh documentary from Guaranteed Archive.org Pool...")
     available = [doc for doc in ARCHIVE_DOCUMENTARY_POOL if doc["src_id"] not in all_posted]
     if not available:
-        print("[WARN] All documentaries in pool were posted! Cycling pool with randomized selection...")
+        print("[WARN] All documentaries in pool were posted! Resetting selection...")
         available = ARCHIVE_DOCUMENTARY_POOL
 
-    for chosen in available:
-        out_file = os.path.join(DOWNLOAD_DIR, f"{chosen['src_id']}.mp4")
-        if os.path.exists(out_file) and os.path.getsize(out_file) > 1024 * 1024:
-            chosen["local_path"] = out_file
-            return chosen
-        if download_file_direct(chosen["url"], out_file):
-            chosen["local_path"] = out_file
-            return chosen
-        print(f"[RETRY] Download failed for {chosen['src_id']}, trying next available...")
+    chosen = available[0]
+    out_file = os.path.join(DOWNLOAD_DIR, f"{chosen['src_id']}.mp4")
+    if os.path.exists(out_file) and os.path.getsize(out_file) > 1024 * 1024:
+        chosen["local_path"] = out_file
+        return chosen
+
+    if download_file_direct(chosen["url"], out_file):
+        chosen["local_path"] = out_file
+        return chosen
     return None
 
 def publish_documentary_to_facebook(doc_info: dict) -> dict:
@@ -143,115 +147,96 @@ def publish_documentary_to_facebook(doc_info: dict) -> dict:
     access_token = FB_PAGE_ACCESS_TOKEN
     file_path = doc_info["local_path"]
     file_size = os.path.getsize(file_path)
+    file_size_mb = file_size / (1024 * 1024)
 
-    print(f"[*] Publishing documentary to Facebook Page '{page_id}' ({file_size / (1024*1024):.2f} MB)...")
+    print(f"[*] Publishing documentary to Facebook Page '{page_id}' ({file_size_mb:.2f} MB)...")
     url = f"{FB_VIDEO_UPLOAD_URL}/{page_id}/videos"
 
-    # Method 1: If file <= 90MB, direct multipart upload
-    if file_size <= 90 * 1024 * 1024:
+    # Strategy 1: Direct High-Speed Single-Shot Upload (< 120MB)
+    if file_size <= 120 * 1024 * 1024:
+        print(f"[*] File size ({file_size_mb:.2f} MB) is within direct upload limit. Uploading single-shot...")
         try:
-            print("[*] File size <= 90MB: using direct multipart upload...")
-            with open(file_path, "rb") as f:
+            with open(file_path, "rb") as vf:
                 res = requests.post(
                     url,
-                    files={"source": f},
+                    files={"source": vf},
                     data={
                         "description": doc_info["description"],
                         "title": doc_info["title"][:100],
                         "published": "true",
                         "access_token": access_token
                     },
-                    timeout=300
+                    timeout=600
                 )
-                res_json = res.json()
-                print(f"[FACEBOOK API RESPONSE]: Status {res.status_code} - {res_json}")
-                if "id" in res_json:
-                    print(f"🎉 Documentary Published Successfully! Facebook Video ID: {res_json['id']}")
-                    return res_json
+                r_json = res.json()
+                print(f"[DIRECT UPLOAD RESULT]: Status {res.status_code} - {r_json}")
+                if "id" in r_json:
+                    print(f"🎉 Documentary Published Successfully! Facebook Video ID: {r_json['id']}")
+                    return r_json
         except Exception as e:
-            print(f"[DIRECT UPLOAD WARN]: {e}")
+            print(f"[DIRECT UPLOAD WARN]: {e}. Falling back to chunked upload...")
 
-    # Method 2: Direct file_url server ingestion
-    if doc_info.get("url"):
-        try:
-            print(f"[*] Attempting Facebook server-side file_url ingestion from: {doc_info['url']}...")
-            url_data = {
-                "file_url": doc_info["url"],
-                "title": doc_info["title"][:100],
-                "description": doc_info["description"],
-                "published": "true",
-                "access_token": access_token
-            }
-            res = requests.post(url, data=url_data, timeout=60)
-            res_json = res.json()
-            print(f"[FACEBOOK API RESPONSE]: Status {res.status_code} - {res_json}")
-            if "id" in res_json:
-                print(f"🎉 Documentary Published Successfully! Facebook Video ID: {res_json['id']}")
-                return res_json
-        except Exception as e:
-            print(f"[FILE_URL WARN]: {e}")
-
-    # Method 3: Resumable Chunked Protocol
-    print(f"[*] Starting Resumable Chunked Upload Protocol for {file_size / (1024*1024):.2f} MB...")
-    init_data = {
+    # Strategy 2: Official Resumable Multipart Chunked Upload (for any size)
+    print(f"[*] Starting Resumable Multipart Chunked Protocol for {file_size_mb:.2f} MB...")
+    # Phase 1: Start
+    init_res = requests.post(url, data={
         "upload_phase": "start",
         "file_size": file_size,
         "access_token": access_token
-    }
-    r = requests.post(url, data=init_data, timeout=35)
-    init_res = r.json()
+    }, timeout=45).json()
     print(f"[CHUNKED START]: {init_res}")
 
     if "upload_session_id" not in init_res:
-        url = f"{FB_GRAPH_URL}/{page_id}/videos"
-        r = requests.post(url, data=init_data, timeout=35)
-        init_res = r.json()
-        print(f"[CHUNKED START FALLBACK]: {init_res}")
+        raise RuntimeError(f"Could not initiate Facebook video upload session: {init_res}")
 
-    if "upload_session_id" in init_res:
-        upload_session_id = init_res["upload_session_id"]
-        start_offset = int(init_res.get("start_offset", 0))
-        video_id = init_res.get("video_id")
-        chunk_size = 4 * 1024 * 1024
+    upload_session_id = init_res["upload_session_id"]
+    video_id = init_res.get("video_id")
+    start_offset = int(init_res["start_offset"])
+    chunk_size = 4 * 1024 * 1024  # 4MB chunks
 
-        with open(file_path, "rb") as f:
-            while start_offset < file_size:
-                f.seek(start_offset)
-                chunk = f.read(chunk_size)
-                if not chunk:
-                    break
-                headers = {
-                    "Authorization": f"OAuth {access_token}",
-                    "offset": str(start_offset),
-                    "file_size": str(file_size)
-                }
-                res_chunk = requests.post(
-                    url,
-                    data=chunk,
-                    headers=headers,
-                    params={"upload_phase": "transfer", "upload_session_id": upload_session_id},
-                    timeout=180
-                )
-                c_data = res_chunk.json()
-                start_offset = int(c_data.get("start_offset", start_offset + len(chunk)))
+    # Phase 2: Transfer Chunks
+    with open(file_path, "rb") as f:
+        while start_offset < file_size:
+            f.seek(start_offset)
+            chunk = f.read(chunk_size)
+            if not chunk:
+                break
+            res_chunk = requests.post(
+                url,
+                files={"video_file_chunk": ("chunk.mp4", chunk, "application/octet-stream")},
+                data={
+                    "upload_phase": "transfer",
+                    "upload_session_id": upload_session_id,
+                    "start_offset": str(start_offset),
+                    "access_token": access_token
+                },
+                timeout=180
+            )
+            c_json = res_chunk.json()
+            if "start_offset" not in c_json:
+                print(f"[CHUNK TRANSFER ERROR]: {c_json}")
+                raise RuntimeError(f"Chunk transfer rejected by Facebook: {c_json}")
+            start_offset = int(c_json["start_offset"])
+            pct = (start_offset / file_size) * 100
+            print(f"  -> Transferred up to {start_offset} bytes ({pct:.1f}%)")
 
-        finish_data = {
-            "upload_phase": "finish",
-            "upload_session_id": upload_session_id,
-            "title": doc_info["title"][:100],
-            "description": doc_info["description"],
-            "published": "true",
-            "access_token": access_token
-        }
-        finish_res = requests.post(url, data=finish_data, timeout=60)
-        f_json = finish_res.json()
-        print(f"[FACEBOOK API RESPONSE]: Status {finish_res.status_code} - {f_json}")
-        final_video_id = f_json.get("id") or video_id or upload_session_id
-        if finish_res.status_code == 200 or f_json.get("success") or "id" in f_json:
-            print(f"🎉 Documentary Published Successfully! Facebook Video ID: {final_video_id}")
-            return {"id": final_video_id, "success": True, "response": f_json}
+    # Phase 3: Finish & Publish
+    finish_res = requests.post(url, data={
+        "upload_phase": "finish",
+        "upload_session_id": upload_session_id,
+        "title": doc_info["title"][:100],
+        "description": doc_info["description"],
+        "published": "true",
+        "access_token": access_token
+    }, timeout=60).json()
+    print(f"[CHUNKED FINISH]: {finish_res}")
 
-    raise RuntimeError("All Facebook documentary upload methods failed!")
+    final_vid_id = finish_res.get("id") or video_id or upload_session_id
+    if finish_res.get("success") or "id" in finish_res:
+        print(f"🎉 Documentary Published Successfully! Facebook Video ID: {final_vid_id}")
+        return {"id": final_vid_id, "success": True, "response": finish_res}
+
+    raise RuntimeError(f"Facebook video finish phase failed: {finish_res}")
 
 def run_documentary_bot():
     print("=" * 65)
