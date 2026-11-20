@@ -2,8 +2,8 @@ name: The Past Alive History Daily Documentary Bot
 
 on:
   schedule:
-    # 06:00 PM BDT (12:00 UTC), 09:00 PM BDT (15:00 UTC), 03:00 AM BDT (21:00 UTC)
-    - cron: '0 12,15,21 * * *'
+    # 09:00 AM BDT (03:00 UTC), 01:00 PM BDT (07:00 UTC), 06:00 PM BDT (12:00 UTC), 09:00 PM BDT (15:00 UTC), 03:00 AM BDT (21:00 UTC)
+    - cron: '0 3,7,12,15,21 * * *'
   workflow_dispatch:
 
 permissions:
